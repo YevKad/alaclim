@@ -44,11 +44,44 @@ fig_lin.update_xaxes(
     tickformat="%b-%d")
 st.write(fig_lin)
 
-fig_hist=px.histogram(df_winter, x="at", color="period", barmode="overlay",
-labels={'seas':'Winter Season (Nov-Apr)','at':'Air Temperature (\u00B0C)'})
-fig_hist.update_xaxes(range = [-35,35])
-st.write(fig_hist)
 
+dist_type = st.selectbox(
+    'Distribution Type',
+     ['Normal','Gamma'])
+dist_string=f'Distribution Type: {dist_type}'
+st.write(dist_string)
+
+df_dist_lst=[]
+for peri in ['1922-1972','1972-2022']:
+    df_per=df_winter[df_winter["period"]==peri]
+    x_pdf=np.linspace(df_per['at'].min(),df_per['at'].max())
+    if dist_type=='Gamma':
+
+        [a_fit,loc_fit,scale_fit]=scipy.stats.gamma.fit(df_per["at"])
+        y_pdf=scipy.stats.gamma.pdf(x_pdf,a_fit,loc=loc_fit,scale=scale_fit)
+
+        dist_params_s=f'**a={a_fit:.3f}, loc={loc_fit:.3f}, scale={scale_fit:.3f}**'
+
+    elif dist_type=='Normal':
+        [mean_fit,std_fit]=scipy.stats.norm.fit(df_per["at"])
+        y_pdf=scipy.stats.norm.pdf(x_pdf,mean_fit,std_fit)
+        dist_params_s=f'**Mean={mean_fit:.3f}, SD={std_fit:.3f}**'
+    st.markdown(f'{peri}. Distribution Parameters: '+dist_params_s)
+    df_dist=pd.DataFrame({'x':x_pdf,'y':y_pdf})
+    df_dist['period']=peri
+    df_dist_lst.append(df_dist)
+df_dist=pd.concat(df_dist_lst)
+fig_hist=go.Figure()
+fig_hist.add_trace(px.histogram(df_winter, x="at", color="period", barmode="overlay",
+labels={'seas':'Winter Season (Nov-Apr)','at':'Air Temperature (\u00B0C)'},range_x=[-35,35],histnorm='probability density').data[0])
+# fig_hist.update_xaxes(range = [-35,35])
+fig_hist.add_trace(px.histogram(df_winter, x="at", color="period", barmode="overlay",
+labels={'seas':'Winter Season (Nov-Apr)','at':'Air Temperature (\u00B0C)'},range_x=[-35,35],histnorm='probability density').data[1])
+fig_hist.add_trace(px.line(df_dist,x='x',y='y', color="period").data[0])
+fig_hist.add_trace(px.line(df_dist,x='x',y='y', color="period").data[1])
+fig_hist.update_yaxes(title='Probability Density')
+fig_hist.update_xaxes(title='Air Temperature (\u00B0C)')
+st.write(fig_hist)
 
 fig_histan=px.histogram(df_winter, x="at", animation_frame="seas",
            range_x=[-35,35], range_y=[0,60],
@@ -81,6 +114,7 @@ In this analysis, FDD is estimated for date range from 1st November to 30th Apri
 
 Plot below shows that FDD Trend is descending, meaning that winters in Almaty are generally warming.
 .''')
+
 
 
 poly_deg=st.slider('Degree of a Polynomial Trend', min_value=1, max_value=20, value=1, step=1)
