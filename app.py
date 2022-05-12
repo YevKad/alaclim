@@ -88,3 +88,5 @@ fig_fdd['data'][1]['line']['color']="black"
 fig_fdd.update_yaxes(title='FDD (\u00B0C)')
 fig_fdd.update_xaxes(title='Winter Season (Nov-Apr)')
 st.write(fig_fdd)
+
+st.write('Dashbord prepared by Yevgeniy Kadranov')
