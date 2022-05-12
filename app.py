@@ -89,4 +89,4 @@ fig_fdd.update_yaxes(title='FDD (\u00B0C)')
 fig_fdd.update_xaxes(title='Winter Season (Nov-Apr)')
 st.write(fig_fdd)
 
-st.write('Dashbord prepared by Yevgeniy Kadranov')
+st.write('Dashboard prepared by Yevgeniy Kadranov')
