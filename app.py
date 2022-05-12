@@ -71,6 +71,7 @@ for peri in ['1922-1972','1972-2022']:
     df_dist['period']=peri
     df_dist_lst.append(df_dist)
 df_dist=pd.concat(df_dist_lst)
+
 fig_hist=go.Figure()
 fig_hist.add_trace(px.histogram(df_winter, x="at", color="period", barmode="overlay",
 labels={'seas':'Winter Season (Nov-Apr)','at':'Air Temperature (\u00B0C)'},range_x=[-35,35],histnorm='probability density').data[0])
@@ -82,7 +83,10 @@ fig_hist.add_trace(px.line(df_dist,x='x',y='y', color="period").data[1])
 fig_hist.update_yaxes(title='Probability Density')
 fig_hist.update_xaxes(title='Air Temperature (\u00B0C)')
 st.write(fig_hist)
+st.markdown('''Above comparison of Distributions and fitted PDF for periods from 1922-1972 and 1972-2022 Show that there are less extreme cold observations for last 50 years (1972-2022).
 
+Mean Air Temperature for the period 1972-2022 is  0.6 degree warmer than for the period 1922-1972
+''')
 fig_histan=px.histogram(df_winter, x="at", animation_frame="seas",
            range_x=[-35,35], range_y=[0,60],
            labels={'seas':'Winter Season (Nov-Apr)','at':'Air Temperature (\u00B0C)'})
