@@ -22,6 +22,7 @@ def get_winter_data(fl):
 
     df_winter=pd.read_csv(fl,parse_dates=['date'])
     df_winter['fd']=np.abs(np.minimum(0,df_winter['at']))
+    df_winter['month']=df_winter['date'].dt.strftime('%b')
     df_winter['date_rel']=pd.to_datetime(df_winter['date'].dt.strftime('2016-%m-%d'),format='%Y-%m-%d')
     df_winter.loc[df_winter['mon']>8,'date_rel']=df_winter['date_rel'] - pd.DateOffset(years=1)
 
@@ -53,8 +54,14 @@ fig_histan=px.histogram(df_winter, x="at", animation_frame="seas",
            range_x=[-35,35], range_y=[0,60],
            labels={'seas':'Winter Season (Nov-Apr)','at':'Air Temperature (\u00B0C)'})
 st.write(fig_histan)
-fig_box = px.box(df_winter, x="seas", y="at",
-                labels={'seas':'Winter Season (Nov-Apr)','at':'Air Temperature (\u00B0C)'},)
+mon_lst=df_winter['month'].unique().tolist()
+
+st_mon_lst = st.multiselect("Months Used", mon_lst, default=mon_lst)
+
+
+df_mon=df_winter[df_winter['month'].isin(st_mon_lst)]
+fig_box = px.box(df_mon, x="seas", y="at",
+                labels={'seas':'Winter Season','at':'Air Temperature (\u00B0C)'},)
 fig_box.update_layout(width=800,height=600)
 st.write(fig_box)
 
@@ -88,5 +95,8 @@ fig_fdd['data'][1]['line']['color']="black"
 fig_fdd.update_yaxes(title='FDD (\u00B0C)')
 fig_fdd.update_xaxes(title='Winter Season (Nov-Apr)')
 st.write(fig_fdd)
-
+st.markdown('**Top 5 Warmest Winter for the past 100 years by FDD:**')
+st.dataframe(df_fdd.sort_values(by=['fdd']).head(5).reset_index(drop=True))
+st.markdown('**Top 5 Coldest Winter for the past 100 years by FDD:**')
+st.dataframe(df_fdd.sort_values(by=['fdd'],ascending=[False]).head(5).reset_index(drop=True))
 st.write('Dashboard prepared by Yevgeniy Kadranov')
