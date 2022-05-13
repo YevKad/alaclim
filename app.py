@@ -175,7 +175,8 @@ fig_fdd.update_xaxes(title='Winter Season (Nov-Apr)')
 st.write(fig_fdd)
 
 st.markdown('''#### Mann-Kendall Test of FDD Trend
-Mann-Kendall trend test is used to determine if there is a statistically significant trend in the data.
+Mann-Kendall trend test is used to determine if there is a
+statistically significant trend in a time series.
 
 The test is performed with `pymannkendall` [library](https://pypi.org/project/pymannkendall/)
 
