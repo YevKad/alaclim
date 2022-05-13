@@ -7,6 +7,8 @@ import plotly.figure_factory as ff
 import plotly.graph_objects as go
 import scipy
 
+import pymannkendall as mk
+
 from datetime import datetime
 st.header('Winter Climate Analysis in Almaty, Kazakhstan')
 st.markdown('by [Yevgeniy Kadranov](https://www.linkedin.com/in/yevkad/)')
@@ -172,6 +174,30 @@ fig_fdd.update_yaxes(title='FDD (\u00B0C)')
 fig_fdd.update_xaxes(title='Winter Season (Nov-Apr)')
 st.write(fig_fdd)
 
+st.markdown('''#### Mann-Kendall Test of FDD Trend
+Mann-Kendall trend test is used to determine if there is a statistically significant trend in the data.
+
+The test is performed with `pymannkendall` [library](https://pypi.org/project/pymannkendall/)
+
+''')
+
+mk_res=mk.original_test(df_fdd['fdd'])
+
+trend_mk=mk_res.trend
+pval_mk=mk_res.p
+if pval_mk<0.05:
+    p_str='the trend in the data is **statistically significant**'
+    alpha_compr='smaller'
+else:
+    p_str='the trend in the data is **not statistically significant**'
+    alpha_compr='greater'
+mk_str=f'''Mann-Kendall Test shows that FDD trend is **{trend_mk}**.
+
+**P-value** is **{pval_mk}**, which is **{alpha_compr}** than **0.05**, meaning that {p_str}
+
+'''
+st.markdown(mk_str)
+st.markdown('#### Winter Severity Ranking with FDD')
 top_c=st.slider('Number of winters to rank: ',
                 min_value=1, max_value=100, value=5, step=1)
 st.markdown(f'**Top {top_c} Warmest and Coldest Winters for the past 100 years by FDD**')
@@ -182,4 +208,5 @@ with col_w:
     st.dataframe(df_fdd.sort_values(by=['fdd']).head(top_c).reset_index(drop=True))
 with col_c:
     st.markdown(f'**Top {top_c} Coldest:**')
-    st.dataframe(df_fdd.sort_values(by=['fdd'],ascending=[False]).head(top_c).reset_index(drop=True))
+    st.dataframe(df_fdd.sort_values(by=['fdd'],
+                ascending=[False]).head(top_c).reset_index(drop=True))
