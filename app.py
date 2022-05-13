@@ -142,7 +142,13 @@ fig_fdd['data'][1]['line']['color']="black"
 fig_fdd.update_yaxes(title='FDD (\u00B0C)')
 fig_fdd.update_xaxes(title='Winter Season (Nov-Apr)')
 st.write(fig_fdd)
-st.markdown('**Top 5 Warmest Winter for the past 100 years by FDD:**')
-st.dataframe(df_fdd.sort_values(by=['fdd']).head(5).reset_index(drop=True))
-st.markdown('**Top 5 Coldest Winter for the past 100 years by FDD:**')
-st.dataframe(df_fdd.sort_values(by=['fdd'],ascending=[False]).head(5).reset_index(drop=True))
+top_c=st.slider('Number of winters to rank: ', min_value=1, max_value=100, value=5, step=1)
+st.markdown(f'**Top {top_c} Warmest and Coldest Winters for the past 100 years by FDD**')
+col_w, col_c = st.columns((1,1))
+
+with col_w:
+    st.markdown(f'**Top {top_c} Warmest:**')
+    st.dataframe(df_fdd.sort_values(by=['fdd']).head(top_c).reset_index(drop=True))
+with col_c:
+    st.markdown(f'**Top {top_c} Coldest:**')
+    st.dataframe(df_fdd.sort_values(by=['fdd'],ascending=[False]).head(top_c).reset_index(drop=True))
