@@ -9,6 +9,7 @@ import scipy
 
 from datetime import datetime
 st.header('Winter Climate Analysis in Almaty, Kazakhstan')
+st.markdown('by Yev Kadranov')
 st.markdown('''
 Winter seasons **1st November to 30th April** from **1922 to 2022**.
 
@@ -30,7 +31,7 @@ def get_winter_data(fl):
     df_winter.loc[df_winter['date']>datetime(1972,6,1), 'period']='1972-2022'
 
     df_fdd=df_winter.groupby(['seas'])['fd'].sum().reset_index(name='fdd')
-
+    df_winter['dt']=df_winter['date'].dt.strftime('%Y%m').astype(int)
     return df_winter,df_fdd
 df_winter,df_fdd=get_winter_data(winter_fl)
 seas_lst=df_fdd['seas'].unique().tolist()
@@ -83,7 +84,7 @@ fig_hist.add_trace(px.line(df_dist,x='x',y='y', color="period").data[1])
 fig_hist.update_yaxes(title='Probability Density')
 fig_hist.update_xaxes(title='Air Temperature (\u00B0C)')
 st.write(fig_hist)
-st.markdown('''Above comparison of Distributions and fitted PDF for periods from 1922-1972 and 1972-2022 Show that there are less extreme cold observations for last 50 years (1972-2022).
+st.markdown('''Above :arrow_up: comparison of Distributions and fitted PDF for periods from 1922-1972 and 1972-2022 Show that there are less extreme cold observations for last 50 years (1972-2022).
 
 Mean Air Temperature for the period 1972-2022 is  0.6 degree warmer than for the period 1922-1972
 ''')
@@ -95,12 +96,20 @@ mon_lst=df_winter['month'].unique().tolist()
 
 st_mon_lst = st.multiselect("Months Used", mon_lst, default=mon_lst)
 
+step=st.slider('Group years ', min_value=1, max_value=50, value=10, step=1)
+date_range=np.array([datetime(1922+i,6,1,0,0).strftime('%Y%m') for i in range(step,101,step)]).astype(int)
+date_bin_n=np.array([f'{1922+i}-{1922+step+i}' for i in range(0,100,step)])
+df_winter_g=df_winter.copy()
+df_winter_g['date_bin']=date_bin_n[np.digitize(df_winter_g['dt'], date_range)]
 
-df_mon=df_winter[df_winter['month'].isin(st_mon_lst)]
-fig_box = px.box(df_mon, x="seas", y="at",
-                labels={'seas':'Winter Season','at':'Air Temperature (\u00B0C)'},)
+df_mon=df_winter_g[df_winter_g['month'].isin(st_mon_lst)]
+fig_box = px.box(df_mon, x="date_bin", y="at",
+                labels={'seas':'Winter Season','at':'Air Temperature (\u00B0C)','date_bin':'Date Range'},)
 fig_box.update_layout(width=800,height=600)
 st.write(fig_box)
+
+st.markdown('''Above :arrow_up: Box Plot represents Air Temperature distribution in a given year group. If winters are grouped every 10 years, median air temperature steadily increases from 1972-1982.
+''')
 
 st.subheader('Freezing Degree Days')
 st.markdown('''
@@ -137,4 +146,3 @@ st.markdown('**Top 5 Warmest Winter for the past 100 years by FDD:**')
 st.dataframe(df_fdd.sort_values(by=['fdd']).head(5).reset_index(drop=True))
 st.markdown('**Top 5 Coldest Winter for the past 100 years by FDD:**')
 st.dataframe(df_fdd.sort_values(by=['fdd'],ascending=[False]).head(5).reset_index(drop=True))
-st.write('Dashboard prepared by Yevgeniy Kadranov')
