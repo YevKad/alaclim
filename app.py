@@ -9,7 +9,7 @@ import scipy
 
 from datetime import datetime
 st.header('Winter Climate Analysis in Almaty, Kazakhstan')
-st.markdown('by Yev Kadranov')
+st.markdown('by [Yevgeniy Kadranov](https://www.linkedin.com/in/yevkad/)')
 st.markdown('''
 Winter seasons **1st November to 30th April** from **1922 to 2022**.
 
