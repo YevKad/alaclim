@@ -9,6 +9,7 @@ import scipy
 import pymannkendall as mk
 
 from datetime import datetime
+
 st.header('Winter Climate Analysis in Almaty, Kazakhstan')
 st.markdown('by [Yevgeniy Kadranov](https://www.linkedin.com/in/yevkad/)')
 st.markdown('''
@@ -60,7 +61,7 @@ yr_s,yr_e=st.slider('Year Range ',
                     min_value=1922, max_value=2021, value=(2011,2021), step=1)
 
 sel_seas=[f'{yr_s+i}-{yr_s+1+i}' for i in range(1+yr_e-yr_s)]
-print(sel_seas)
+
 df_seas_sel=df_winter[df_winter['seas'].isin(sel_seas)]
 
 
