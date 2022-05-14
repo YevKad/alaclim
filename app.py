@@ -123,9 +123,7 @@ fig_histan=px.histogram(df_winter, x="at", animation_frame="seas",
                     'at':'Air Temperature (\u00B0C)'})
 
 st.write(fig_histan)
-mon_lst=df_winter['month'].unique().tolist()
 
-st_mon_lst = st.multiselect("Months Used", mon_lst, default=mon_lst)
 with st.echo():
 
     # Years grouping:
@@ -143,6 +141,8 @@ with st.echo():
     df_winter_g=df_winter.copy()
     df_winter_g['date_bin']=date_bin_n[np.digitize(df_winter_g['dt'], date_range)]
 
+mon_lst=df_winter['month'].unique().tolist()
+st_mon_lst = st.multiselect("Months Used", mon_lst, default=mon_lst)
 df_mon=df_winter_g[df_winter_g['month'].isin(st_mon_lst)]
 
 fig_box = px.box(df_mon, x="date_bin", y="at",
