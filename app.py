@@ -134,10 +134,10 @@ with st.echo():
     step=st.selectbox('Group years ', group_lst, index=group_lst.index(10))
 
     date_range=np.array([datetime(yr_start+i,6,1).strftime('%Y%m')
-                                for i in range(step,101,step)
+                                for i in range(step,nmax+1,step)
                         ]).astype(int)
 
-    date_bin_n=np.array([f'{yr_start+i}-{yr_start+step+i}' for i in range(0,100,step)])
+    date_bin_n=np.array([f'{yr_start+i}-{yr_start+step+i}' for i in range(0,nmax,step)])
 
     df_winter_g=df_winter.copy()
     df_winter_g['date_bin']=date_bin_n[np.digitize(df_winter_g['dt'], date_range)]
