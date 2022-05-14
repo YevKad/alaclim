@@ -151,7 +151,7 @@ fig_box = px.box(df_mon, x="date_bin", y="at",
                         'at':'Air Temperature (\u00B0C)',
                         'date_bin':'Date Range'},)
 
-fig_box.update_layout(width=800,height=600)
+# fig_box.update_layout(width=800,height=600)
 st.write(fig_box)
 
 st.markdown('''Above :arrow_up: Box Plot represents
