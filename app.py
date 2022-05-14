@@ -128,15 +128,16 @@ with st.echo():
 
     # Years grouping:
     nmax=df_fdd.shape[0]
+    yr_start=df_winter['year'].min()
 
     group_lst=[i for i in range(1,nmax+1,1) if nmax % i ==0] # list of only divisible groups
     step=st.selectbox('Group years ', group_lst, index=group_lst.index(10))
 
-    date_range=np.array([datetime(1922+i,6,1).strftime('%Y%m')
+    date_range=np.array([datetime(yr_start+i,6,1).strftime('%Y%m')
                                 for i in range(step,101,step)
                         ]).astype(int)
 
-    date_bin_n=np.array([f'{1922+i}-{1922+step+i}' for i in range(0,100,step)])
+    date_bin_n=np.array([f'{yr_start+i}-{yr_start+step+i}' for i in range(0,100,step)])
 
     df_winter_g=df_winter.copy()
     df_winter_g['date_bin']=date_bin_n[np.digitize(df_winter_g['dt'], date_range)]
