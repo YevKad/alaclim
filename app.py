@@ -162,14 +162,14 @@ FDD=\sum{|min(0,at_i)|}
 ''')
 st.markdown('''Where *at* is daily mean air temperature
 
-For example, if during 5 days Daily Mean Air Temperature was -4$^\circ$C, +2$^\circ$, -3$^\circ$, -2$^\circ$, 0$^\circ$,
+For example, if during 5 days Daily Mean Air Temperature was -4$^\circ$C, +2$^\circ$C, -3$^\circ$C, -2$^\circ$C, 0$^\circ$C,
 than FDD is calculated as *4+0+3+2+0=9*
 
 In this analysis, FDD is estimated for date range from 1st November to 30th April.
 
 Plot below :arrow_down: shows that FDD Trend is descending, meaning that winters
 in Almaty are generally warming.
-.''')
+''')
 
 poly_deg=st.slider('Degree of a Polynomial Trend',
                     min_value=1, max_value=20, value=1, step=1)
