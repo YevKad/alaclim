@@ -37,6 +37,7 @@ def get_winter_data(fl):
     df_winter.loc[df_winter['date']>datetime(1972,6,1), 'period']='1972-2022'
 
     df_fdd=df_winter.groupby(['seas'])['fd'].sum().reset_index(name='fdd')
+    df_fdd['fdd']=df_fdd['fdd'].astype(int)
     df_winter['dt']=df_winter['date'].dt.strftime('%Y%m').astype(int)
     return df_winter,df_fdd
 df_winter,df_fdd=get_winter_data(winter_fl)
@@ -116,6 +117,7 @@ st.write(fig_histan)
 mon_lst=df_winter['month'].unique().tolist()
 
 st_mon_lst = st.multiselect("Months Used", mon_lst, default=mon_lst)
+
 step=st.slider('Group years ', min_value=1, max_value=50, value=10, step=1)
 
 date_range=np.array([datetime(1922+i,6,1,0,0).strftime('%Y%m')
@@ -154,6 +156,9 @@ FDD=\sum{|min(0,at_i)|}
 ''')
 st.markdown('''Where *at* is daily mean air temperature
 
+For example, if during 5 days Daily Mean Air Temperature was -4$^\circ$C, +2$^\circ$, -3$^\circ$, -2$^\circ$, 0$^\circ$,
+than FDD is calculated as *4+0+3+2+0=9*
+
 In this analysis, FDD is estimated for date range from 1st November to 30th April.
 
 Plot below :arrow_down: shows that FDD Trend is descending, meaning that winters
@@ -178,8 +183,8 @@ st.markdown('''#### Mann-Kendall Test of FDD Trend
 Mann-Kendall trend test is used to determine if there is a
 statistically significant trend in a time series.
 
-The test is performed with `pymannkendall` [library](https://pypi.org/project/pymannkendall/):
-
+The test is performed with `pymannkendall`
+[library](https://pypi.org/project/pymannkendall/) as following:
 ''')
 with st.echo():
     mk_res=mk.original_test(df_fdd['fdd']) # results of Mann-Kendall Test
@@ -188,16 +193,16 @@ with st.echo():
     pval_mk=mk_res.p      # P-Value of MK Test
 
     if pval_mk<0.05: # alpha=0.05
-        p_str='the trend in the data is **statistically significant**'
+        p_str='**statistically significant**'
         alpha_compr='smaller'
     else:
-        p_str='the trend in the data is **not statistically significant**'
+        p_str='**not statistically significant**'
         alpha_compr='greater'
 
     #Markdown string generated to present MK Test results of FDD Trend
     mk_str=f'''Mann-Kendall Test shows that FDD trend is **{trend_mk}**.
     \n\n**P-value** is **{pval_mk}**, which is **{alpha_compr}**
-    than **0.05**, meaning that {p_str}'''
+    than **0.05**, meaning that the trend in the data is {p_str}'''
 
 
 
