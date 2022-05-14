@@ -54,32 +54,41 @@ fig_lin.update_xaxes(
 st.write(fig_lin)
 
 
-dist_type = st.selectbox(
-    'Distribution Type',
-     ['Normal','Gamma'])
-dist_string=f'Distribution Type: {dist_type}'
-st.write(dist_string)
 
-df_dist_lst=[]
-for peri in ['1922-1972','1972-2022']:
-    df_per=df_winter[df_winter["period"]==peri]
-    x_pdf=np.linspace(df_per['at'].min(),df_per['at'].max())
-    if dist_type=='Gamma':
 
-        [a_fit,loc_fit,scale_fit]=scipy.stats.gamma.fit(df_per["at"])
-        y_pdf=scipy.stats.gamma.pdf(x_pdf,a_fit,loc=loc_fit,scale=scale_fit)
+with st.echo():
+    # Distribution Fitting
 
-        dist_params_s=f'**a={a_fit:.3f}, loc={loc_fit:.3f}, scale={scale_fit:.3f}**'
+    dist_type = st.selectbox(
+        'Distribution Type',
+         ['Normal','Gamma'])
+    dist_string=f'Distribution Type: {dist_type}'
+    st.write(dist_string)
 
-    elif dist_type=='Normal':
-        [mean_fit,std_fit]=scipy.stats.norm.fit(df_per["at"])
-        y_pdf=scipy.stats.norm.pdf(x_pdf,mean_fit,std_fit)
-        dist_params_s=f'**Mean={mean_fit:.3f}, SD={std_fit:.3f}**'
-    st.markdown(f'{peri}. Distribution Parameters: '+dist_params_s)
-    df_dist=pd.DataFrame({'x':x_pdf,'y':y_pdf})
-    df_dist['period']=peri
-    df_dist_lst.append(df_dist)
-df_dist=pd.concat(df_dist_lst)
+    df_dist_lst=[]
+    for peri in ['1922-1972','1972-2022']:
+
+        df_per=df_winter[df_winter["period"]==peri]
+        x_pdf=np.linspace(df_per['at'].min(),df_per['at'].max())
+
+        if dist_type=='Gamma':
+
+            a_fit,loc_fit,scale_fit=scipy.stats.gamma.fit(df_per["at"])
+            y_pdf=scipy.stats.gamma.pdf(x_pdf,a_fit,loc=loc_fit,scale=scale_fit)
+            dist_params_s=f'**a={a_fit:.3f}, loc={loc_fit:.3f}, scale={scale_fit:.3f}**'
+
+        elif dist_type=='Normal':
+
+            mean_fit,std_fit=scipy.stats.norm.fit(df_per["at"])
+            y_pdf=scipy.stats.norm.pdf(x_pdf,mean_fit,std_fit)
+            dist_params_s=f'**Mean={mean_fit:.3f}, SD={std_fit:.3f}**'
+
+        st.markdown(f'{peri}. Distribution Parameters: '+dist_params_s)
+        df_dist=pd.DataFrame({'x':x_pdf,'y':y_pdf})
+        df_dist['period']=peri
+        df_dist_lst.append(df_dist)
+
+    df_dist=pd.concat(df_dist_lst)
 
 fig_hist=go.Figure()
 fig_hist.add_trace(px.histogram(df_winter, x="at", color="period",
