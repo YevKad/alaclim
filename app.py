@@ -156,7 +156,7 @@ st.markdown('''Where *at* is daily mean air temperature
 
 In this analysis, FDD is estimated for date range from 1st November to 30th April.
 
-Plot below shows that FDD Trend is descending, meaning that winters
+Plot below :arrow_down: shows that FDD Trend is descending, meaning that winters
 in Almaty are generally warming.
 .''')
 
@@ -178,27 +178,32 @@ st.markdown('''#### Mann-Kendall Test of FDD Trend
 Mann-Kendall trend test is used to determine if there is a
 statistically significant trend in a time series.
 
-The test is performed with `pymannkendall` [library](https://pypi.org/project/pymannkendall/)
+The test is performed with `pymannkendall` [library](https://pypi.org/project/pymannkendall/):
 
 ''')
+with st.echo():
+    mk_res=mk.original_test(df_fdd['fdd']) # results of Mann-Kendall Test
 
-mk_res=mk.original_test(df_fdd['fdd'])
+    trend_mk=mk_res.trend # Trend: Increasing, Decreasing or No Trend
+    pval_mk=mk_res.p      # P-Value of MK Test
 
-trend_mk=mk_res.trend
-pval_mk=mk_res.p
-if pval_mk<0.05:
-    p_str='the trend in the data is **statistically significant**'
-    alpha_compr='smaller'
-else:
-    p_str='the trend in the data is **not statistically significant**'
-    alpha_compr='greater'
-mk_str=f'''Mann-Kendall Test shows that FDD trend is **{trend_mk}**.
+    if pval_mk<0.05: # alpha=0.05
+        p_str='the trend in the data is **statistically significant**'
+        alpha_compr='smaller'
+    else:
+        p_str='the trend in the data is **not statistically significant**'
+        alpha_compr='greater'
 
-**P-value** is **{pval_mk}**, which is **{alpha_compr}** than **0.05**, meaning that {p_str}
+    #Markdown string generated to present MK Test results of FDD Trend
+    mk_str=f'''Mann-Kendall Test shows that FDD trend is **{trend_mk}**.
+    \n\n**P-value** is **{pval_mk}**, which is **{alpha_compr}**
+    than **0.05**, meaning that {p_str}'''
 
-'''
+
+
 st.markdown(mk_str)
 st.markdown('#### Winter Severity Ranking with FDD')
+
 top_c=st.slider('Number of winters to rank: ',
                 min_value=1, max_value=100, value=5, step=1)
 st.markdown(f'**Top {top_c} Warmest and Coldest Winters for the past 100 years by FDD**')
