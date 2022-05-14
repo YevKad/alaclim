@@ -6,7 +6,6 @@ import plotly.express as px
 import plotly.figure_factory as ff
 import plotly.graph_objects as go
 import scipy
-
 import pymannkendall as mk
 
 from datetime import datetime
@@ -41,20 +40,54 @@ def get_winter_data(fl):
     df_winter['dt']=df_winter['date'].dt.strftime('%Y%m').astype(int)
     return df_winter,df_fdd
 df_winter,df_fdd=get_winter_data(winter_fl)
+
+df_winter_agg=df_winter.groupby(['date_rel']).agg(
+                                                {'at':['min','max','mean']}
+                                                ).reset_index()
+
+df_winter_agg.columns=['date','min','max','mean']
+# df_winter_agg=pd.melt(df_winter_agg, id_vars=['date'],
+#                             value_vars=['min','max','mean'])
+
+# st.dataframe(df_winter_agg)
+
+fig_agg=go.Figure()
+
 seas_lst=df_fdd['seas'].unique().tolist()
 # st_ms = st.sidebar.multiselect("Event Seasons", seas_lst, default=seas_lst)
 
-fig_lin=px.line(df_winter, x="date_rel", y="at",color='seas',
-                labels={'seas':'Winter Season (Nov-Apr)',
-                        'at':'Air Temperature (\u00B0C)',
-                        'date_rel':'Day'})
+yr_s,yr_e=st.slider('Year Range ',
+                    min_value=1922, max_value=2021, value=(2011,2021), step=1)
 
-fig_lin.update_xaxes(
-    tickformat="%b-%d")
-st.write(fig_lin)
+sel_seas=[f'{yr_s+i}-{yr_s+1+i}' for i in range(1+yr_e-yr_s)]
+print(sel_seas)
+df_seas_sel=df_winter[df_winter['seas'].isin(sel_seas)]
 
 
+fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['max'], name='100 years Max',
+                         line = dict(color='firebrick', width=4)))
+fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['min'], name='100 years Min',
+                         line=dict(color='royalblue', width=4)))
+fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['mean'], name='100 years Avg',
+                         line=dict(color='black', width=4)))
+for i in range(len(sel_seas)):
+    fig_agg.add_trace(px.line(df_seas_sel,x='date_rel',y='at', color="seas").data[i])
+# fig_agg.add_trace(px.line(df_winter_agg,x=['date'],y='mean').data[0])
+# fig_agg.add_trace(px.line(df_winter_agg,x=['date'],y='max').data[0])
+fig_agg.update_xaxes(
+    tickformat="%b-%d",title='Day')
+fig_agg.update_yaxes(title='Air Temperature (\u00B0C)')
 
+st.write(fig_agg)
+
+# fig_lin=px.line(df_winter, x="date_rel", y="at",color='seas',
+#                 labels={'seas':'Winter Season (Nov-Apr)',
+#                         'at':'Air Temperature (\u00B0C)',
+#                         'date_rel':'Day'})
+#
+# fig_lin.update_xaxes(
+#     tickformat="%b-%d")
+# st.write(fig_lin)
 
 with st.echo():
     # Distribution Fitting
