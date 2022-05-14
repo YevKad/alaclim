@@ -120,8 +120,10 @@ st_mon_lst = st.multiselect("Months Used", mon_lst, default=mon_lst)
 with st.echo():
 
     # Years grouping:
+    nmax=100
 
-    step=st.slider('Group years ', min_value=1, max_value=50, value=10, step=1)
+    group_lst=[i for i in range(1,nmax,1) if nmax % i ==0] # list of only divisible groups
+    step=st.selectbox('Group years ', group_lst, index=group_lst.index(10))
 
     date_range=np.array([datetime(1922+i,6,1).strftime('%Y%m')
                                 for i in range(step,101,step)
