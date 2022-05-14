@@ -127,9 +127,9 @@ st.write(fig_histan)
 with st.echo():
 
     # Years grouping:
-    nmax=100
+    nmax=df_fdd.shape[0]
 
-    group_lst=[i for i in range(1,nmax,1) if nmax % i ==0] # list of only divisible groups
+    group_lst=[i for i in range(1,nmax+1,1) if nmax % i ==0] # list of only divisible groups
     step=st.selectbox('Group years ', group_lst, index=group_lst.index(10))
 
     date_range=np.array([datetime(1922+i,6,1).strftime('%Y%m')
