@@ -52,7 +52,7 @@ df_winter_agg.columns=['date','min','max','mean']
 
 # st.dataframe(df_winter_agg)
 
-fig_agg=go.Figure()
+# fig_agg=go.Figure()
 
 seas_lst=df_fdd['seas'].unique().tolist()
 # st_ms = st.sidebar.multiselect("Event Seasons", seas_lst, default=seas_lst)
@@ -64,15 +64,16 @@ sel_seas=[f'{yr_s+i}-{yr_s+1+i}' for i in range(1+yr_e-yr_s)]
 
 df_seas_sel=df_winter[df_winter['seas'].isin(sel_seas)]
 
-
+fig_agg=px.line(df_seas_sel,x='date_rel',y='at', color="seas")
+fig_agg.update_traces(opacity=min(0.8,10/len(sel_seas)))
 fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['max'], name='100 years Max',
                          line = dict(color='firebrick', width=4)))
 fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['min'], name='100 years Min',
                          line=dict(color='royalblue', width=4)))
 fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['mean'], name='100 years Avg',
                          line=dict(color='black', width=4)))
-for i in range(len(sel_seas)):
-    fig_agg.add_trace(px.line(df_seas_sel,x='date_rel',y='at', color="seas").data[i])
+# for i in range(len(sel_seas)):
+
 # fig_agg.add_trace(px.line(df_winter_agg,x=['date'],y='mean').data[0])
 # fig_agg.add_trace(px.line(df_winter_agg,x=['date'],y='max').data[0])
 fig_agg.update_xaxes(
