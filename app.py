@@ -219,7 +219,7 @@ with st.echo():
 
     #Markdown string generated to present MK Test results of FDD Trend
     mk_str=f'''Mann-Kendall Test shows that FDD trend is **{trend_mk}**.
-    \n\n**P-value** is **{pval_mk}**, which is **{alpha_compr}**
+    \n\n**P-value** is **{pval_mk:.3e}**, which is **{alpha_compr}**
     than **0.05**, meaning that the trend in the data is {p_str}'''
 
 
