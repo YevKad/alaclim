@@ -117,17 +117,23 @@ st.write(fig_histan)
 mon_lst=df_winter['month'].unique().tolist()
 
 st_mon_lst = st.multiselect("Months Used", mon_lst, default=mon_lst)
+with st.echo():
 
-step=st.slider('Group years ', min_value=1, max_value=50, value=10, step=1)
+    # Years grouping:
 
-date_range=np.array([datetime(1922+i,6,1,0,0).strftime('%Y%m')
-                            for i in range(step,101,step)
-                    ]).astype(int)
-date_bin_n=np.array([f'{1922+i}-{1922+step+i}' for i in range(0,100,step)])
-df_winter_g=df_winter.copy()
-df_winter_g['date_bin']=date_bin_n[np.digitize(df_winter_g['dt'], date_range)]
+    step=st.slider('Group years ', min_value=1, max_value=50, value=10, step=1)
+
+    date_range=np.array([datetime(1922+i,6,1).strftime('%Y%m')
+                                for i in range(step,101,step)
+                        ]).astype(int)
+
+    date_bin_n=np.array([f'{1922+i}-{1922+step+i}' for i in range(0,100,step)])
+
+    df_winter_g=df_winter.copy()
+    df_winter_g['date_bin']=date_bin_n[np.digitize(df_winter_g['dt'], date_range)]
 
 df_mon=df_winter_g[df_winter_g['month'].isin(st_mon_lst)]
+
 fig_box = px.box(df_mon, x="date_bin", y="at",
                 labels={'seas':'Winter Season',
                         'at':'Air Temperature (\u00B0C)',
