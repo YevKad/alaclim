@@ -77,7 +77,7 @@ fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['min'],
 fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['mean'],
                                 name='100 years Avg',
                                 legendrank=2,
-                                line=dict(color='black', width=4)))
+                                line=dict(color='green', width=4)))
 
 fig_agg.update_xaxes(
     tickformat="%b-%d",title='Day')
