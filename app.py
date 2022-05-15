@@ -23,6 +23,7 @@ st.map(pd.DataFrame({'city':['Almaty'],
                     'latitude':[43.2331],'longitude':[76.9331]
                     }),
         zoom=6)
+st.markdown("-----")
 winter_fl='./data/ala1922-2022decapr.csv'
 @st.cache
 def get_winter_data(fl):
@@ -81,25 +82,13 @@ fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['mean'],
 
 fig_agg.update_xaxes(
     tickformat="%b-%d",title='Day')
-fig_agg.update_yaxes(title='Air Temperature (\u00B0C)')
 
-# fig_agg.update_layout(legend=dict(
-#     orientation="h",
-#     yanchor="bottom",
-#     y=1.02,
-#     xanchor="right",
-#     x=1
-# ))
-# st.write(fig_agg)
+fig_agg.update_yaxes(title='Air Temperature (\u00B0C)')
+showleg = st.checkbox('Show Legend')
+fig_agg.update_layout(showlegend=showleg)
+
+
 st.plotly_chart(fig_agg, use_container_width=True)
-# fig_lin=px.line(df_winter, x="date_rel", y="at",color='seas',
-#                 labels={'seas':'Winter Season (Nov-Apr)',
-#                         'at':'Air Temperature (\u00B0C)',
-#                         'date_rel':'Day'})
-#
-# fig_lin.update_xaxes(
-#     tickformat="%b-%d")
-# st.write(fig_lin)
 
 with st.echo():
     # Distribution Fitting
