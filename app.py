@@ -66,20 +66,30 @@ df_seas_sel=df_winter[df_winter['seas'].isin(sel_seas)]
 
 fig_agg=px.line(df_seas_sel,x='date_rel',y='at', color="seas")
 fig_agg.update_traces(opacity=min(0.8,10/len(sel_seas)))
-fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['max'], name='100 years Max',
-                         line = dict(color='firebrick', width=4)))
-fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['min'], name='100 years Min',
-                         line=dict(color='royalblue', width=4)))
-fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['mean'], name='100 years Avg',
-                         line=dict(color='black', width=4)))
-# for i in range(len(sel_seas)):
+fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['max'],
+                                name='100 years Max',
+                                legendrank=3,
+                                line = dict(color='firebrick', width=4)))
+fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['min'],
+                                name='100 years Min',
+                                legendrank=1,
+                                line=dict(color='royalblue', width=4)))
+fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['mean'],
+                                name='100 years Avg',
+                                legendrank=2,
+                                line=dict(color='black', width=4)))
 
-# fig_agg.add_trace(px.line(df_winter_agg,x=['date'],y='mean').data[0])
-# fig_agg.add_trace(px.line(df_winter_agg,x=['date'],y='max').data[0])
 fig_agg.update_xaxes(
     tickformat="%b-%d",title='Day')
 fig_agg.update_yaxes(title='Air Temperature (\u00B0C)')
 
+# fig_agg.update_layout(legend=dict(
+#     orientation="h",
+#     yanchor="bottom",
+#     y=1.02,
+#     xanchor="right",
+#     x=1
+# ))
 st.write(fig_agg)
 
 # fig_lin=px.line(df_winter, x="date_rel", y="at",color='seas',
@@ -124,6 +134,7 @@ with st.echo():
         df_dist_lst.append(df_dist)
 
     df_dist=pd.concat(df_dist_lst)
+
 
 fig_hist=go.Figure()
 fig_hist.add_trace(px.histogram(df_winter, x="at", color="period",
