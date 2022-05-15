@@ -90,8 +90,8 @@ fig_agg.update_yaxes(title='Air Temperature (\u00B0C)')
 #     xanchor="right",
 #     x=1
 # ))
-st.write(fig_agg)
-
+# st.write(fig_agg)
+st.plotly_chart(fig_agg, use_container_width=True)
 # fig_lin=px.line(df_winter, x="date_rel", y="at",color='seas',
 #                 labels={'seas':'Winter Season (Nov-Apr)',
 #                         'at':'Air Temperature (\u00B0C)',
