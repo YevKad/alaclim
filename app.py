@@ -100,6 +100,16 @@ fig_agg.update_layout(showlegend=showleg)
 
 st.plotly_chart(fig_agg, use_container_width=True)
 
+
+st.markdown('''Above :arrow_up: timeseries shows development of 100 years
+Min, Max and Mean (green line) Air Temperature for months from Nov to Apr as well as
+Develpment of selectable period Mean (orange line) and individual seasons.
+The plot indicated that average of periods from about 1970s up to present
+are generally above 100 years average, while periods prior to 1970s are below
+100 years average.
+''')
+
+
 with st.echo():
     # Distribution Fitting
 
