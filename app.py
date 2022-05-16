@@ -60,13 +60,18 @@ seas_lst=df_fdd['seas'].unique().tolist()
 
 yr_s,yr_e=st.slider('Year Range ',
                     min_value=1922, max_value=2021, value=(2011,2021), step=1)
-
+per_rng=f'{yr_s}-{yr_e+1}'
 sel_seas=[f'{yr_s+i}-{yr_s+1+i}' for i in range(1+yr_e-yr_s)]
 
 df_seas_sel=df_winter[df_winter['seas'].isin(sel_seas)]
+df_seas_sel_agg=df_seas_sel.groupby(['date_rel']).agg(
+                                                {'at':['min','max','mean']}
+                                                ).reset_index()
+
+df_seas_sel_agg.columns=['date','min','max','mean']
 
 fig_agg=px.line(df_seas_sel,x='date_rel',y='at', color="seas")
-fig_agg.update_traces(opacity=min(0.8,10/len(sel_seas)))
+fig_agg.update_traces(opacity=min(0.8,10/len(sel_seas)),line=dict(width=0.5))
 fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['max'],
                                 name='100 years Max',
                                 legendrank=3,
@@ -78,7 +83,12 @@ fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['min'],
 fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['mean'],
                                 name='100 years Avg',
                                 legendrank=2,
-                                line=dict(color='green', width=4)))
+                                line=dict(color='green', width=5)))
+
+fig_agg.add_trace(go.Scatter(x=df_seas_sel_agg['date'], y=df_seas_sel_agg['mean'],
+                                name=f'{per_rng} Avg',
+                                legendrank=4,
+                                line=dict(color='orange', width=5)))
 
 fig_agg.update_xaxes(
     tickformat="%b-%d",title='Day')
