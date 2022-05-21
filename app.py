@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import altair as alt
 import plotly.express as px
 import plotly.figure_factory as ff
 import plotly.graph_objects as go
@@ -13,12 +12,12 @@ from datetime import datetime
 st.header('Winter Climate Analysis in Almaty, Kazakhstan')
 st.markdown('by [Yevgeniy Kadranov](https://www.linkedin.com/in/yevkad/)')
 st.markdown('''
-Winter seasons **1st November to 30th April** from **1922 to 2022**.
-
+Winter seasons **1st November to 30th April** from **1922 to 2022**.\n
 Data Courtesy:
 1922-2005 [NOAA Climate Data](https://www.ncdc.noaa.gov/cdo-web/),
 2005-2022 [RP5](https://rp5.ru/)
 ''')
+
 st.map(pd.DataFrame({'city':['Almaty'],
                     'latitude':[43.2331],'longitude':[76.9331]
                     }),
@@ -40,7 +39,9 @@ def get_winter_data(fl):
     df_fdd=df_winter.groupby(['seas'])['fd'].sum().reset_index(name='fdd')
     df_fdd['fdd']=df_fdd['fdd'].astype(int)
     df_winter['dt']=df_winter['date'].dt.strftime('%Y%m').astype(int)
+
     return df_winter,df_fdd
+
 df_winter,df_fdd=get_winter_data(winter_fl)
 
 df_winter_agg=df_winter.groupby(['date_rel']).agg(
@@ -48,22 +49,20 @@ df_winter_agg=df_winter.groupby(['date_rel']).agg(
                                                 ).reset_index()
 
 df_winter_agg.columns=['date','min','max','mean']
-# df_winter_agg=pd.melt(df_winter_agg, id_vars=['date'],
-#                             value_vars=['min','max','mean'])
-
-# st.dataframe(df_winter_agg)
-
-# fig_agg=go.Figure()
 
 seas_lst=df_fdd['seas'].unique().tolist()
 # st_ms = st.sidebar.multiselect("Event Seasons", seas_lst, default=seas_lst)
 
 yr_s,yr_e=st.slider('Year Range ',
                     min_value=1922, max_value=2021, value=(2011,2021), step=1)
-per_rng=f'{yr_s}-{yr_e+1}'
-sel_seas=[f'{yr_s+i}-{yr_s+1+i}' for i in range(1+yr_e-yr_s)]
+yr_e=yr_e+1
+per_rng=f'{yr_s}-{yr_e}'
 
-df_seas_sel=df_winter[df_winter['seas'].isin(sel_seas)]
+dt_s=datetime(yr_s,6,1)
+dt_e=datetime(yr_e,6,1)
+
+df_seas_sel=df_winter[(df_winter['date']>dt_s) & (df_winter['date']<dt_e)]
+
 df_seas_sel_agg=df_seas_sel.groupby(['date_rel']).agg(
                                                 {'at':['min','max','mean']}
                                                 ).reset_index()
@@ -71,7 +70,7 @@ df_seas_sel_agg=df_seas_sel.groupby(['date_rel']).agg(
 df_seas_sel_agg.columns=['date','min','max','mean']
 
 fig_agg=px.line(df_seas_sel,x='date_rel',y='at', color="seas")
-fig_agg.update_traces(opacity=min(0.8,10/len(sel_seas)),line=dict(width=0.5))
+fig_agg.update_traces(opacity=min(0.8,10/(yr_e-yr_s)),line=dict(width=0.5))
 fig_agg.add_trace(go.Scatter(x=df_winter_agg['date'], y=df_winter_agg['max'],
                                 name='100 years Max',
                                 legendrank=3,
@@ -97,9 +96,7 @@ fig_agg.update_yaxes(title='Air Temperature (\u00B0C)')
 showleg = st.checkbox('Show Legend')
 fig_agg.update_layout(showlegend=showleg)
 
-
 st.plotly_chart(fig_agg, use_container_width=True)
-
 
 st.markdown('''Above :arrow_up: timeseries shows development of 100 years
 Min, Max and Mean (green line) Air Temperature on a particular day from Nov to Apr as well as
@@ -108,7 +105,6 @@ The plot indicated that average of periods from about 1970s up to present
 are generally above 100 years average, while periods prior to 1970s are below
 100 years average.
 ''')
-
 
 with st.echo():
     # Distribution Fitting
@@ -144,7 +140,6 @@ with st.echo():
 
     df_dist=pd.concat(df_dist_lst)
 
-
 fig_hist=go.Figure()
 fig_hist.add_trace(px.histogram(df_winter, x="at", color="period",
                     barmode="overlay",
@@ -167,9 +162,8 @@ fig_hist.update_xaxes(title='Air Temperature (\u00B0C)')
 st.write(fig_hist)
 st.markdown('''Above :arrow_up: comparison of Distributions and
 fitted PDF for periods from 1922-1972 and 1972-2022
-Show that there are less extreme cold observations for last 50 years (1972-2022).
-
-Mean Air Temperature for the period 1972-2022
+Show that there are less extreme cold observations for the last 50 years (1972-2022).
+\nMean Air Temperature for the period 1972-2022
 is 0.6 degree warmer than for the period 1922-1972
 ''')
 fig_histan=px.histogram(df_winter, x="at", animation_frame="seas",
@@ -197,7 +191,7 @@ with st.echo():
     df_winter_g=df_winter.copy()
     df_winter_g['date_bin']=date_bin_n[np.digitize(df_winter_g['dt'], date_range)]
 
-mon_lst=df_winter['month'].unique().tolist()
+mon_lst=df_winter['month'].unique()
 st_mon_lst = st.multiselect("Months Used", mon_lst, default=mon_lst)
 df_mon=df_winter_g[df_winter_g['month'].isin(st_mon_lst)]
 
@@ -216,49 +210,52 @@ median air temperature steadily increases from 1972-1982.
 ''')
 
 st.subheader('Freezing Degree Days')
+
 st.markdown('''
 **Freezing Degree Days (FDD)** -
 is an absolute sum of negative daily mean air temperature
 and is commonly used as an indicator of
-winter severity: colder winters have higher FDD.
-
+winter severity: colder winters have higher FDD.\n\n
 FDD is estimated with the following equasion:
 ''')
+
 st.latex(r'''
 FDD=\sum{|min(0,at_i)|}
 ''')
+
 st.markdown('''Where *at* is daily mean air temperature
 
-For example, if during 5 days Daily Mean Air Temperature was -4$^\circ$C, +2$^\circ$C, -3$^\circ$C, -2$^\circ$C, 0$^\circ$C,
-than FDD is calculated as *4+0+3+2+0=9*
-
-In this analysis, FDD is estimated for date range from 1st November to 30th April.
-
+For example, if during 5 days Daily Mean Air Temperature
+was -4$^\circ$C, +2$^\circ$C, -3$^\circ$C, -2$^\circ$C, 0$^\circ$C,
+than FDD is calculated as *4+0+3+2+0=9*\n\n
+In this analysis, FDD is estimated for date range from 1st November to 30th April.\n\n
 Plot below :arrow_down: shows that FDD Trend is descending, meaning that winters
 in Almaty are generally warming.
 ''')
 
 poly_deg=st.slider('Degree of a Polynomial Trend',
                     min_value=1, max_value=20, value=1, step=1)
-fig_fdd=go.Figure()
+
 trend_x = np.arange(df_fdd.shape[0])
 trend_fit = np.polyfit(trend_x, df_fdd['fdd'], poly_deg)
 trend_fit_fn = np.poly1d(trend_fit)
 
+fig_fdd=go.Figure()
 fig_fdd.add_trace(px.line(x=df_fdd['seas'],y=df_fdd['fdd']).data[0])
 fig_fdd.add_trace(px.line(x=df_fdd['seas'],y=trend_fit_fn(trend_x)).data[0])
 fig_fdd['data'][1]['line']['color']="black"
 fig_fdd.update_yaxes(title='FDD (\u00B0C)')
 fig_fdd.update_xaxes(title='Winter Season (Nov-Apr)')
+
 st.write(fig_fdd)
 
 st.markdown('''#### Mann-Kendall Test of FDD Trend
 Mann-Kendall trend test is used to determine if there is a
-statistically significant trend in a time series.
-
+statistically significant trend in a time series.\n\n
 The test is performed with `pymannkendall`
 [library](https://pypi.org/project/pymannkendall/) as following:
 ''')
+
 with st.echo():
     mk_res=mk.original_test(df_fdd['fdd']) # results of Mann-Kendall Test
 
@@ -276,8 +273,6 @@ with st.echo():
     mk_str=f'''Mann-Kendall Test shows that FDD trend is **{trend_mk}**.
     \n\n**P-value** is **{pval_mk:.3e}**, which is **{alpha_compr}**
     than **0.05**, meaning that the trend in the data is {p_str}'''
-
-
 
 st.markdown(mk_str)
 st.markdown('#### Winter Severity Ranking with FDD')
