@@ -10,9 +10,9 @@ import pymannkendall as mk
 from datetime import datetime
 
 st.header('Winter Climate Analysis in Almaty, Kazakhstan')
-st.markdown('by [Yevgeniy Kadranov](https://www.linkedin.com/in/yevkad/)')
-st.markdown('''
-Winter seasons **1st November to 30th April** from **1922 to 2022**.\n
+st.markdown('''by [Yevgeniy Kadranov](https://www.linkedin.com/in/yevkad/)
+from [ICEMAN.KZ](https://iceman.kz/)\n\n-----
+Winter seasons **from 1st November to 30th April**, **1922 to 2022**.\n
 Data Courtesy:
 1922-2005 [NOAA Climate Data](https://www.ncdc.noaa.gov/cdo-web/),
 2005-2022 [RP5](https://rp5.ru/)
@@ -290,6 +290,7 @@ with col_c:
     st.dataframe(df_fdd.sort_values(by=['fdd'],
                 ascending=[False]).head(top_c).reset_index(drop=True))
 
-st.markdown('''
+
+(st.markdown('''-----\n\n
 [GitHub repo](https://github.com/YevKad/alaclim)
-''')
+'''))
