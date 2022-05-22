@@ -289,3 +289,7 @@ with col_c:
     st.markdown(f'**Top {top_c} Coldest:**')
     st.dataframe(df_fdd.sort_values(by=['fdd'],
                 ascending=[False]).head(top_c).reset_index(drop=True))
+
+st.markdown('''
+[GitHub repo](https://github.com/YevKad/alaclim)
+''')
