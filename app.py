@@ -199,7 +199,7 @@ df_mon=df_winter_g[df_winter_g['month'].isin(st_mon_lst)]
 split_mon=st.checkbox('Split by Month')
 if split_mon:
     color_mon='month'
-    color_order={"direction": ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr']}
+    color_order={"month": ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr']}
 else:
     color_mon=None
     color_order=None
