@@ -30,6 +30,7 @@ def get_winter_data(fl):
     df_winter=pd.read_csv(fl,parse_dates=['date'])
     df_winter['fd']=np.abs(np.minimum(0,df_winter['at']))
     df_winter['month']=df_winter['date'].dt.strftime('%b')
+    #creating field with "relative" date to aggregate given time range for each day
     df_winter['date_rel']=pd.to_datetime(df_winter['date'].dt.strftime('2016-%m-%d'),format='%Y-%m-%d')
     df_winter.loc[df_winter['mon']>8,'date_rel']=df_winter['date_rel'] - pd.DateOffset(years=1)
 
@@ -195,7 +196,16 @@ mon_lst=df_winter['month'].unique()
 st_mon_lst = st.multiselect("Months Used", mon_lst, default=mon_lst)
 df_mon=df_winter_g[df_winter_g['month'].isin(st_mon_lst)]
 
-fig_box = px.box(df_mon, x="date_bin", y="at",
+split_mon=st.checkbox('Split by Month')
+if split_mon:
+    color_mon='month'
+    color_order={"direction": ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr']}
+else:
+    color_mon=None
+    color_order=None
+
+fig_box = px.box(df_mon, x="date_bin", y="at",color=color_mon,
+                category_orders=color_order,
                 labels={'seas':'Winter Season',
                         'at':'Air Temperature (\u00B0C)',
                         'date_bin':'Date Range'},)
@@ -289,7 +299,6 @@ with col_c:
     st.markdown(f'**Top {top_c} Coldest:**')
     st.dataframe(df_fdd.sort_values(by=['fdd'],
                 ascending=[False]).head(top_c).reset_index(drop=True))
-
 
 (st.markdown('''-----\n\n
 [GitHub repo](https://github.com/YevKad/alaclim)
