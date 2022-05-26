@@ -266,8 +266,13 @@ The test is performed with `pymannkendall`
 [library](https://pypi.org/project/pymannkendall/) as following:
 ''')
 
+fdd_yr_s,fdd_yr_e=st.slider('Year Range for MK Test',
+                    min_value=1922, max_value=2021, value=(1922,2021), step=1)
+fdd_yr_e=fdd_yr_e+1
+fdd_seas_lst=[f'{i+fdd_yr_s}-{i+fdd_yr_s+1}' for i in range(fdd_yr_e-fdd_yr_s)]
+df_fdd_seas=df_fdd[df_fdd['seas'].isin(fdd_seas_lst)].sort_values(by=['seas'])
 with st.echo():
-    mk_res=mk.original_test(df_fdd['fdd']) # results of Mann-Kendall Test
+    mk_res=mk.original_test(df_fdd_seas['fdd']) # results of Mann-Kendall Test
 
     trend_mk=mk_res.trend # Trend: Increasing, Decreasing or No Trend
     pval_mk=mk_res.p      # P-Value of MK Test
