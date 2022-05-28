@@ -271,23 +271,29 @@ fdd_yr_s,fdd_yr_e=st.slider('Year Range for MK Test',
 fdd_yr_e=fdd_yr_e+1
 fdd_seas_lst=[f'{i+fdd_yr_s}-{i+fdd_yr_s+1}' for i in range(fdd_yr_e-fdd_yr_s)]
 df_fdd_seas=df_fdd[df_fdd['seas'].isin(fdd_seas_lst)].sort_values(by=['seas'])
+
 with st.echo():
-    mk_res=mk.original_test(df_fdd_seas['fdd']) # results of Mann-Kendall Test
+    if fdd_yr_e-fdd_yr_s>2:
+        mk_res=mk.original_test(df_fdd_seas['fdd']) # results of Mann-Kendall Test
 
-    trend_mk=mk_res.trend # Trend: Increasing, Decreasing or No Trend
-    pval_mk=mk_res.p      # P-Value of MK Test
+        trend_mk=mk_res.trend # Trend: Increasing, Decreasing or No Trend
+        pval_mk=mk_res.p      # P-Value of MK Test
 
-    if pval_mk<0.05: # alpha=0.05
-        p_str='**statistically significant**'
-        alpha_compr='smaller'
+        if pval_mk<0.05: # alpha=0.05
+            p_str='**statistically significant**'
+            alpha_compr='smaller'
+        else:
+            p_str='**not statistically significant**'
+            alpha_compr='greater'
+
+        #Markdown string generated to present MK Test results of FDD Trend
+        mk_str=f'''Mann-Kendall Test shows that FDD trend is **{trend_mk}**.
+        \n\n**P-value** is **{pval_mk:.3e}**, which is **{alpha_compr}**
+        than **0.05**, meaning that the trend in the data is {p_str}'''
     else:
-        p_str='**not statistically significant**'
-        alpha_compr='greater'
-
-    #Markdown string generated to present MK Test results of FDD Trend
-    mk_str=f'''Mann-Kendall Test shows that FDD trend is **{trend_mk}**.
-    \n\n**P-value** is **{pval_mk:.3e}**, which is **{alpha_compr}**
-    than **0.05**, meaning that the trend in the data is {p_str}'''
+        mk_str='''
+        Insufficient data for MK test. Increase Year Range.
+        '''
 
 st.markdown(mk_str)
 st.markdown('#### Winter Severity Ranking with FDD')
