@@ -272,8 +272,9 @@ fdd_yr_e=fdd_yr_e+1
 fdd_seas_lst=[f'{i+fdd_yr_s}-{i+fdd_yr_s+1}' for i in range(fdd_yr_e-fdd_yr_s)]
 df_fdd_seas=df_fdd[df_fdd['seas'].isin(fdd_seas_lst)].sort_values(by=['seas'])
 
-with st.echo():
-    if fdd_yr_e-fdd_yr_s>2:
+
+if fdd_yr_e-fdd_yr_s>2:
+    with st.echo():
         mk_res=mk.original_test(df_fdd_seas['fdd']) # results of Mann-Kendall Test
 
         trend_mk=mk_res.trend # Trend: Increasing, Decreasing or No Trend
@@ -290,10 +291,10 @@ with st.echo():
         mk_str=f'''Mann-Kendall Test shows that FDD trend is **{trend_mk}**.
         \n\n**P-value** is **{pval_mk:.3e}**, which is **{alpha_compr}**
         than **0.05**, meaning that the trend in the data is {p_str}'''
-    else:
-        mk_str='''
-        Insufficient data for MK test. Increase Year Range.
-        '''
+else:
+    mk_str='''
+    Insufficient data for MK test. Increase Year Range.
+    '''
 
 st.markdown(mk_str)
 st.markdown('#### Winter Severity Ranking with FDD')
