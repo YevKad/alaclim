@@ -22,8 +22,11 @@ st.map(pd.DataFrame({'city':['Almaty'],
                     'latitude':[43.2331],'longitude':[76.9331]
                     }),
         zoom=6)
-st.markdown("-----")
+
+st.markdown("------")
+
 winter_fl='./data/ala1922-2022decapr.csv'
+
 @st.cache
 def get_winter_data(fl):
 
@@ -106,6 +109,15 @@ The plot indicated that average of periods from about 1970s up to present
 are generally above 100 years average, while periods prior to 1970s are below
 100 years average.
 ''')
+
+yr_s,yr_e=st.slider('Global Average Range ',
+                    min_value=1922, max_value=2021, value=(1932,1982), step=1)
+yr_e=yr_e+1
+per_rng=f'{yr_s}-{yr_e}'
+
+dt_s=datetime(yr_s,6,1)
+dt_e=datetime(yr_e,6,1)
+
 
 with st.echo():
     # Distribution Fitting
